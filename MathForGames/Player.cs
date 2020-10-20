@@ -8,6 +8,7 @@ namespace MathForGames
 {
     class Player : Actor
     {
+        private float _speed = 2;
         public Player(float x, float y, char icon = ' ', ConsoleColor color = ConsoleColor.White)
             : base(x, y, icon, color)
         {
@@ -30,36 +31,9 @@ namespace MathForGames
 
             Velocity = new Vector2(xVelocity, yVelocity);
 
-            if(Velocity.GetMagnitude() != 0)
-            {
-                Velocity.X /= Velocity.GetMagnitude();
-                Velocity.Y /= Velocity.GetMagnitude();
-            }
-            
-            //ConsoleKey keyPressed = Game.GetNextKey();
+            Velocity = Vector2.Normalize(Velocity);
+            Velocity *= _speed;
 
-            //switch (keyPressed)
-            //{
-            //    case ConsoleKey.A:
-            //        _velocity.X = -1;
-            //        break;
-            //    case ConsoleKey.D:
-            //        _velocity.X = 1;
-            //        break;
-            //    case ConsoleKey.W:
-            //        _velocity.Y = -1;
-            //        break;
-            //    case ConsoleKey.S:
-            //        _velocity.Y = 1;
-            //        break;
-            //    case ConsoleKey.Spacebar:
-            //        Game.SetCurrentScene(1);
-            //        break;
-            //    default:
-            //        _velocity.X = 0;
-            //        _velocity.Y = 0;
-            //        break;
-            //}
             base.Update();
         }
     }

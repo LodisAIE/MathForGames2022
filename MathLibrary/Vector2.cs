@@ -31,6 +31,36 @@ namespace MathLibrary
             }
         }
 
+        public float Magnitude
+        {
+            get
+            {
+                return (float)Math.Sqrt(X * X + Y * Y);
+            }
+        }
+
+        public Vector2 Normalized
+        {
+            get
+            {
+                return Normalize(this);
+            }
+        }
+
+        public static Vector2 Normalize(Vector2 vector)
+        {
+            if (vector.Magnitude == 0)
+            {
+                return new Vector2();
+            }
+
+            return new Vector2(vector.X / vector.Magnitude, vector.Y / vector.Magnitude);
+        }
+
+        public static float DotProduct(Vector2 lhs, Vector2 rhs)
+        {
+            return (lhs.X * rhs.X) + (lhs.Y * rhs.Y);
+        }
 
         public Vector2()
         {
@@ -57,10 +87,6 @@ namespace MathLibrary
             return new Vector2(lhs.X * scalar, lhs.Y * scalar);
         }
 
-        public float GetMagnitude()
-        {
-            return (float)Math.Sqrt(X * X + Y * Y);
-        }
 
     }
 }
