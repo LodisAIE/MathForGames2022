@@ -23,9 +23,12 @@ namespace MathForGames
             facing = new Vector2(1, 0);
         }
 
-        public bool CheckIfActorSeen(Actor actor)
+        public bool CheckIfActorSeen(Actor actor, float maxViewAngle, float maxViewDistance)
         {
-            if (Vector2.DotProduct(actor.Position.Normalized, Position.Normalized) == 0)
+
+            Vector2 direction = actor.Position - Position;
+            float angle = (float)Math.Acos(Vector2.DotProduct(facing, direction.Normalized));
+            if ( angle <= maxViewAngle && direction.Magnitude <= maxViewDistance)
                 return true;
 
             return false;
@@ -33,7 +36,7 @@ namespace MathForGames
 
         public override void Update()
         {
-            if (CheckIfActorSeen(target))
+            if (CheckIfActorSeen(target, 1, 2))
             {
                 _rayColor = Color.WHITE;
             }

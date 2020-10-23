@@ -8,7 +8,7 @@ namespace MathForGames
 {
     class Player : Actor
     {
-        private float _speed = 2;
+        private float _speed = 1;
         public Player(float x, float y, char icon = ' ', ConsoleColor color = ConsoleColor.White)
             : base(x, y, icon, color)
         {
