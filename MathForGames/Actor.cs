@@ -18,7 +18,7 @@ namespace MathForGames
         protected char _icon = ' ';
         protected Vector2 _velocity;
         protected Matrix3 _globalTransform;
-        protected Matrix3 _localTransform;
+        protected Matrix3 _localTransform = new Matrix3();
         protected Matrix3 _translation = new Matrix3();
         protected Matrix3 _rotation = new Matrix3();
         protected Matrix3 _scale = new Matrix3();
@@ -26,6 +26,7 @@ namespace MathForGames
         protected Color _rayColor;
         protected Actor _parent;
         protected Actor[] _children = new Actor[0];
+        protected float _rotationAngle;
 
         public bool Started { get; private set; }
 
@@ -34,6 +35,11 @@ namespace MathForGames
             get 
             {
                 return new Vector2(_localTransform.m11, _localTransform.m21);
+            }
+            set
+            {
+                Vector2 lookPosition = LocalPosition + value.Normalized;
+                LookAt(lookPosition);
             }
         }
 
@@ -148,10 +154,45 @@ namespace MathForGames
 
         public void SetRotation(float radians)
         {
+            _rotationAngle = radians;
             _rotation.m11 = (float)Math.Cos(radians);
             _rotation.m21 = -(float)Math.Sin(radians);
             _rotation.m12 = (float)Math.Sin(radians);
             _rotation.m22 = (float)Math.Cos(radians);
+        }
+
+        public void Rotate(float radians)
+        {
+            _rotationAngle += radians;
+            SetRotation(_rotationAngle);
+        }
+
+        /// <summary>
+        /// Rotates the actor to face the given position
+        /// </summary>
+        /// <param name="position">The position the actor should be facing</param>
+        public void LookAt(Vector2 position)
+        {
+            //Find the direction that the actor should look in
+            Vector2 direction = (position - LocalPosition).Normalized;
+
+            //Use the dotproduct to find the angle the actor needs to rotate
+            float dotProd = Vector2.DotProduct(Forward, direction);
+            if (Math.Abs(dotProd) > 1)
+                return;
+            float angle = (float)Math.Acos(dotProd);
+
+            //Find a perpindicular vector to the direction
+            Vector2 perp = new Vector2(direction.Y, -direction.X);
+
+            //Find the dot product of the perpindicular vector and the current forward
+            float perpDot = Vector2.DotProduct(perp, Forward);
+
+            //If the result isn't 0, use it to change the sign of the angle to be either positive or negative
+            if (perpDot != 0)
+                angle *= -perpDot / Math.Abs(perpDot);
+
+            Rotate(angle);
         }
 
         public void SetScale(float x, float y)
@@ -173,7 +214,7 @@ namespace MathForGames
         {
             if (_velocity.Magnitude <= 0)
                 return;
-
+            Forward = Velocity.Normalized;
         }
 
         public virtual void Start()
