@@ -27,6 +27,7 @@ namespace MathForGames
         protected Actor _parent;
         protected Actor[] _children = new Actor[0];
         protected float _rotationAngle;
+        private float _collisionRadius;
 
         public bool Started { get; private set; }
 
@@ -193,6 +194,26 @@ namespace MathForGames
                 angle *= -perpDot / Math.Abs(perpDot);
 
             Rotate(angle);
+        }
+
+        /// <summary>
+        /// Checks to see if this actor overlaps another.
+        /// </summary>
+        /// <param name="other">The actor that this actor is checking collision against</param>
+        /// <returns></returns>
+        public bool CheckCollision(Actor other)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Called whenever a collision occurs between this actor and another.
+        /// USe this to define game logic for this actors collision.
+        /// </summary>
+        /// <param name="other"></param>
+        public virtual void OnCollision(Actor other)
+        {
+
         }
 
         public void SetScale(float x, float y)

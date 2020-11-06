@@ -109,6 +109,14 @@ namespace MathForGames
             return actorRemoved;
         }
 
+        /// <summary>
+        /// Check to see if any actor in the scene has collided with another actor.
+        /// </summary>
+        private void CheckCollision()
+        {
+
+        }
+
         public virtual void Start()
         {
             Started = true;
@@ -123,6 +131,7 @@ namespace MathForGames
 
                 _actors[i].Update(deltaTime);
             }
+            CheckCollision();
         }
 
         public virtual void Draw()
