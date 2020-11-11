@@ -17,7 +17,7 @@ namespace MathForGames
     {
         protected char _icon = ' ';
         protected Vector2 _velocity;
-        protected Matrix3 _globalTransform;
+        protected Matrix3 _globalTransform = new Matrix3();
         protected Matrix3 _localTransform = new Matrix3();
         protected Matrix3 _translation = new Matrix3();
         protected Matrix3 _rotation = new Matrix3();
@@ -35,7 +35,7 @@ namespace MathForGames
         {
             get 
             {
-                return new Vector2(_localTransform.m11, _localTransform.m21);
+                return new Vector2(_globalTransform.m11, _globalTransform.m21);
             }
             set
             {
@@ -149,23 +149,17 @@ namespace MathForGames
 
         public void SetTranslation(Vector2 position)
         {
-            _translation.m13 = position.X;
-            _translation.m23 = position.Y;
+            _translation = Matrix3.CreateTranslation(position);
         }
 
         public void SetRotation(float radians)
         {
-            _rotationAngle = radians;
-            _rotation.m11 = (float)Math.Cos(radians);
-            _rotation.m21 = -(float)Math.Sin(radians);
-            _rotation.m12 = (float)Math.Sin(radians);
-            _rotation.m22 = (float)Math.Cos(radians);
+            _rotation = Matrix3.CreateRotation(radians);
         }
 
         public void Rotate(float radians)
         {
-            _rotationAngle += radians;
-            SetRotation(_rotationAngle);
+            _rotation *= Matrix3.CreateRotation(radians);
         }
 
         /// <summary>
@@ -218,13 +212,17 @@ namespace MathForGames
 
         public void SetScale(float x, float y)
         {
-            _scale.m11 = x;
-            _scale.m22 = y;
+            _scale = Matrix3.CreateScale(new Vector2(x, y));
         }
 
-        private void UpdateTransform()
+        private void UpdateTransforms()
         {
             _localTransform = _translation * _rotation * _scale;
+
+            if (_parent != null)
+                _globalTransform = _parent._globalTransform * _localTransform;
+            else
+                _globalTransform = Game.GetCurrentScene().World * _localTransform;
         }
 
         /// <summary>
@@ -242,11 +240,10 @@ namespace MathForGames
         {
             Started = true;
         }
-
         
         public virtual void Update(float deltaTime)
         {
-            UpdateTransform();
+            UpdateTransforms();
 
             //Before the actor is moved, update the direction it's facing
             UpdateFacing();
@@ -260,10 +257,10 @@ namespace MathForGames
             //Draws the actor and a line indicating it facing to the raylib window.
             //Scaled to match console movement
             Raylib.DrawLine(
-                (int)(LocalPosition.X * 32),
-                (int)(LocalPosition.Y * 32),
-                (int)((LocalPosition.X + Forward.X) * 32),
-                (int)((LocalPosition.Y + Forward.Y) * 32),
+                (int)(WorldPosition.X * 32),
+                (int)(WorldPosition.Y * 32),
+                (int)((WorldPosition.X + Forward.X) * 32),
+                (int)((WorldPosition.Y + Forward.Y) * 32),
                 Color.WHITE
             );
 
@@ -271,10 +268,10 @@ namespace MathForGames
             Console.ForegroundColor = _color;
 
             //Only draws the actor on the console if it is within the bounds of the window
-            if(LocalPosition.X >= 0 && LocalPosition.X < Console.WindowWidth 
-                && LocalPosition.Y >= 0  && LocalPosition.Y < Console.WindowHeight)
+            if (WorldPosition.X >= 0 && WorldPosition.X < Console.WindowWidth 
+                && WorldPosition.Y >= 0  && WorldPosition.Y < Console.WindowHeight)
             {
-                Console.SetCursorPosition((int)LocalPosition.X, (int)LocalPosition.Y);
+                Console.SetCursorPosition((int)WorldPosition.X, (int)WorldPosition.Y);
                 Console.Write(_icon);
             }
             

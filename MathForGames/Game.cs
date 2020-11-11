@@ -197,8 +197,10 @@ namespace MathForGames
             Player player = new Player(0, 1,Color.BLUE, '@', ConsoleColor.Red);
             actor.Velocity.X = 1;
             enemy.Target = player;
+            enemy.SetTranslation(new Vector2(5, 0));
             player.Speed = 5;
             player.SetTranslation(new Vector2(10, 10));
+            player.AddChild(enemy);
             //player.SetRotation(1);
             player.SetScale(1, 6);
             //Add actors to the scenes
