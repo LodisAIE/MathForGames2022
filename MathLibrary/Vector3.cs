@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MathLibrary
 {
-    class Vector3
+    public class Vector3
     {
         private float _x;
         private float _y;
@@ -97,7 +97,7 @@ namespace MathLibrary
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns></returns>
-        public static float DotProduct(Vector2 lhs, Vector2 rhs)
+        public static float DotProduct(Vector3 lhs, Vector3 rhs)
         {
             return (lhs.X * rhs.X) + (lhs.Y * rhs.Y);
         }
@@ -117,9 +117,19 @@ namespace MathLibrary
             return new Vector3(lhs.X * scalar, lhs.Y * scalar, lhs.Z * scalar);
         }
 
+        public static Vector3 operator *(float scalar, Vector3 lhs)
+        {
+            return new Vector3(lhs.X * scalar, lhs.Y * scalar, lhs.Z * scalar);
+        }
+
         public static Vector3 operator /(Vector3 lhs, float scalar)
         {
             return new Vector3(lhs.X / scalar, lhs.Y / scalar, lhs.Z / scalar);
+        }
+
+        public static Vector3 CrossProduct(Vector3 lhs, Vector3 rhs)
+        {
+            return new Vector3();
         }
     }
 }
