@@ -10,7 +10,9 @@ namespace MathForGames
     {
         private Texture2D _texture;
 
-        //Width of the loaded texture
+        /// <summary>
+        /// Width of the loaded texture
+        /// </summary>
         public int Width
         {
             get
@@ -23,7 +25,9 @@ namespace MathForGames
             }
         }
 
-        //Height of the loaded texture
+        /// <summary>
+        /// Height of the loaded texture
+        /// </summary>
         public int Height
         {
             get

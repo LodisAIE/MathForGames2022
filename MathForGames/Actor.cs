@@ -9,9 +9,7 @@ namespace MathForGames
 
     /// <summary>
     /// This is the base class for all objects that will 
-    /// be moved or interacted with in the game
-    /// 
-    /// Create a "solar system" using the matrix hierarchy  
+    /// be moved or interacted with in the game.
     /// </summary>
     class Actor
     {
@@ -27,7 +25,7 @@ namespace MathForGames
         protected Actor _parent;
         protected Actor[] _children = new Actor[0];
         protected float _rotationAngle;
-        private float _collisionRadius;
+        protected float _collisionRadius;
 
         public bool Started { get; private set; }
 
@@ -105,6 +103,11 @@ namespace MathForGames
             _rayColor = rayColor;
         }
 
+        /// <summary>
+        /// Adds a child to the actor. The child's transform is concatenated and
+        /// updated with the actor's transform.
+        /// </summary>
+        /// <param name="child">The reference to the new child</param>
         public void AddChild(Actor child)
         {
             Actor[] tempArray = new Actor[_children.Length + 1];
@@ -119,6 +122,13 @@ namespace MathForGames
             child._parent = this;
         }
 
+        /// <summary>
+        /// Removes the child from the actors list of children. The child will no longer
+        /// be updated or concatenated with this actor's transform.
+        /// </summary>
+        /// <param name="child">The reference to the child to remove</param>
+        /// <returns>Returns if the removal was successful. Can be unsuccessful
+        /// if the actor isn't in the list of children.</returns>
         public bool RemoveChild(Actor child)
         {
             bool childRemoved = false;
@@ -147,19 +157,41 @@ namespace MathForGames
             return childRemoved;
         }
 
+        /// <summary>
+        /// Sets the position of the actor.
+        /// </summary>
+        /// <param name="position">The new position of the actor.</param>
         public void SetTranslation(Vector2 position)
         {
             _translation = Matrix3.CreateTranslation(position);
         }
 
+        /// <summary>
+        /// Set the rotaion of the actor.
+        /// </summary>
+        /// <param name="radians">The angle of the new roation in radians.</param>
         public void SetRotation(float radians)
         {
             _rotation = Matrix3.CreateRotation(radians);
         }
 
+        /// <summary>
+        /// Adds a roation to the current transform's rotation.
+        /// </summary>
+        /// <param name="radians">The angle in radians to turn.</param>
         public void Rotate(float radians)
         {
             _rotation *= Matrix3.CreateRotation(radians);
+        }
+
+        /// <summary>
+        /// Sets the scale of the actor.
+        /// </summary>
+        /// <param name="x">The value to scale on the x axis.</param>
+        /// <param name="y">The value to scale on the y axis</param>
+        public void SetScale(float x, float y)
+        {
+            _scale = Matrix3.CreateScale(new Vector2(x, y));
         }
 
         /// <summary>
@@ -197,12 +229,13 @@ namespace MathForGames
         /// <returns></returns>
         public bool CheckCollision(Actor other)
         {
-            return false;
+            float distance = (other.WorldPosition - WorldPosition).Magnitude;
+            return distance <= other._collisionRadius + _collisionRadius;
         }
 
         /// <summary>
         /// Called whenever a collision occurs between this actor and another.
-        /// USe this to define game logic for this actors collision.
+        /// Use this to define game logic for this actors collision.
         /// </summary>
         /// <param name="other"></param>
         public virtual void OnCollision(Actor other)
@@ -210,11 +243,12 @@ namespace MathForGames
 
         }
 
-        public void SetScale(float x, float y)
-        {
-            _scale = Matrix3.CreateScale(new Vector2(x, y));
-        }
-
+        /// <summary>
+        /// Sets the local transform to be the concatenation of the translation, rotation, and
+        /// scale matrices. Sets the global transform to be the concatenation of the
+        /// parent transform and local transform, or to the local transform and the world transform
+        /// if the actor has no parent.
+        /// </summary>
         private void UpdateTransforms()
         {
             _localTransform = _translation * _rotation * _scale;
@@ -222,7 +256,7 @@ namespace MathForGames
             if (_parent != null)
                 _globalTransform = _parent._globalTransform * _localTransform;
             else
-                _globalTransform = Game.GetCurrentScene().World * _localTransform;
+                _globalTransform = Engine.GetCurrentScene().World * _localTransform;
         }
 
         /// <summary>
@@ -276,7 +310,7 @@ namespace MathForGames
             }
             
             //Reset console text color to be default color
-            Console.ForegroundColor = Game.DefaultColor;
+            Console.ForegroundColor = Engine.DefaultColor;
         }
 
         public virtual void End()
